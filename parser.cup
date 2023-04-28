@@ -1,0 +1,178 @@
+import java_cup.runtime.*;
+
+
+terminal IF, THEN, ELSE;
+terminal Integer NUM;
+terminal String ID;
+terminal EQUALS, NOT_EQUALS, MORE_THAN, LESS_THAN, MORE_EQUALS_THAN, LESS_EQUALS_THAN;
+terminal PLUSPLUS, MINUSMINUS, HUNDRED, PLUS, MINUS, TIMES, DIVIDE, MOD, UMINUS;
+terminal ASSIGNMENT;
+terminal SEMI;
+terminal LBRACE, RBRACE, LPAR, RPAR;
+
+non terminal cond, booleanExp, stmt;
+non terminal stmtList;
+
+precedence nonassoc ELSE;
+precedence nonassoc IF;
+precedence left UMINUS;
+
+cond ::= IF LPAR booleanExp RPAR THEN stmt
+		    {:
+		     System.out.printf("Redukcija 1. cond -> if (booleanExp) then stmt\n");
+		    :}
+		 |  IF LPAR booleanExp RPAR THEN stmt ELSE stmt
+		    {:
+		     System.out.printf("Redukcija 2. cond -> if (booleanExp) then stmt else stmt\n");
+		    :}
+		 ;
+
+booleanExp ::= ID EQUALS ID
+		    {:
+		     System.out.printf("Redukcija 3. booleanExp -> id == id\n");
+		     :}
+		 |  ID NOT_EQUALS ID
+		    {:
+		     System.out.printf("Redukcija 4. booleanExp -> id != id\n");
+		     :}
+		 |  ID MORE_THAN ID
+		    {:
+		     System.out.printf("Redukcija 5. booleanExp -> id > id\n");
+		     :}
+		 |  ID LESS_THAN ID
+            {:
+             System.out.printf("Redukcija 6. booleanExp -> id < id\n");
+             :}
+         |  ID MORE_EQUALS_THAN ID
+            {:
+             System.out.printf("Redukcija 7. booleanExp -> id >= id\n");
+             :}
+         |  ID LESS_EQUALS_THAN ID
+            {:
+             System.out.printf("Redukcija 8. booleanExp -> id <= id\n");
+             :}
+		 ;
+
+stmt ::= LBRACE stmtList RBRACE
+		    {:
+		     System.out.printf("Redukcija 9. stmt -> { stmtList }\n");
+		     :}
+         |  ID ASSIGNMENT NUM PLUS NUM SEMI
+             {:
+              System.out.printf("Redukcija 14. stmt -> id = num + num;\n");
+              :}
+         |  ID ASSIGNMENT NUM PLUS NUM error
+             {:
+              System.out.printf("Redukcija 14. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+         |  ID ASSIGNMENT NUM PLUS error SEMI
+             {:
+              System.out.printf("Redukcija 14. Error: Fali drugi broj.\n");
+              :}
+
+         |  ID ASSIGNMENT NUM MINUS NUM SEMI
+             {:
+              System.out.printf("Redukcija 15. stmt -> id = num - num;\n");
+              :}
+         |  ID ASSIGNMENT NUM MINUS NUM error
+             {:
+              System.out.printf("Redukcija 15. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+           |  ID ASSIGNMENT NUM MINUS error SEMI
+               {:
+                System.out.printf("Redukcija 15. Error: Fali drugi broj.\n");
+                :}
+
+         |  ID ASSIGNMENT NUM TIMES NUM SEMI
+             {:
+              System.out.printf("Redukcija 16. stmt -> id = num * num;\n");
+              :}
+         |  ID ASSIGNMENT NUM TIMES NUM error
+             {:
+             System.out.printf("Redukcija 16. Error: Fali ti tacka zarez na kraju.\n");
+             :}
+          |  ID ASSIGNMENT NUM TIMES error SEMI
+              {:
+               System.out.printf("Redukcija 16. Error: Fali drugi broj.\n");
+               :}
+
+         |  ID ASSIGNMENT NUM DIVIDE NUM SEMI
+             {:
+             System.out.printf("Redukcija 17. stmt -> id = num / num;\n");
+             :}
+         |  ID ASSIGNMENT NUM DIVIDE NUM error
+             {:
+              System.out.printf("Redukcija 17. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+           |  ID ASSIGNMENT NUM DIVIDE error SEMI
+               {:
+                System.out.printf("Redukcija 18. Error: Fali drugi broj.\n");
+                :}
+
+         |  ID ASSIGNMENT NUM MOD NUM SEMI
+             {:
+              System.out.printf("Redukcija 18. stmt -> id = num % num;\n");
+              :}
+         |  ID ASSIGNMENT NUM MOD NUM error
+             {:
+              System.out.printf("Redukcija 18. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+           |  ID ASSIGNMENT NUM MOD error SEMI
+               {:
+                System.out.printf("Redukcija 18. Error: Fali drugi broj.\n");
+                :}
+         |  ID ASSIGNMENT MINUS NUM SEMI
+             {:
+              System.out.printf("Redukcija 19. stmt -> id = 0 - num;\n");
+              :}
+             %prec UMINUS
+         |  ID ASSIGNMENT MINUS NUM error
+             {:
+              System.out.printf("Redukcija 19. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+		 |  ID ASSIGNMENT NUM SEMI
+		    {:
+		     System.out.printf("Redukcija 10. stmt -> id = num;\n");
+		     :}
+         |  ID PLUSPLUS SEMI
+             {:
+              System.out.printf("Redukcija 11. stmt -> id++;\n");
+              :}
+         |  ID PLUSPLUS error
+             {:
+              System.out.printf("Redukcija 11. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+
+         |  ID MINUSMINUS SEMI
+             {:
+              System.out.printf("Redukcija 12. stmt -> id--;\n");
+              :}
+          |  ID MINUSMINUS error
+              {:
+               System.out.printf("Redukcija 12. Error: Fali ti tacka zarez na kraju.\n");
+               :}
+
+         |  ID HUNDRED SEMI
+             {:
+              System.out.printf("Redukcija 13. stmt -> id = 100;\n");
+              :}
+         |  ID HUNDRED error
+             {:
+              System.out.printf("Redukcija 13. Error: Fali ti tacka zarez na kraju.\n");
+              :}
+
+         |  cond
+            {:
+             System.out.printf("Redukcija 20. stmt -> cond\n");
+             :}
+		 ;
+
+stmtList ::= stmt
+		    {:
+		     System.out.printf("Redukcija 21. stmtList -> stmt\n");
+		     :}
+		 |  stmtList stmt
+		    {:
+		     System.out.printf("Redukcija 22. stmtList -> stmtList stmt\n");
+		     :}
+		 ;
